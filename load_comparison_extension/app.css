@@ -1,0 +1,111 @@
+
+#matcherControls {
+  display: none;
+  position: fixed;
+  top: 15px;
+  width: 100%;
+}
+
+#matcherControls div.mah-btns {
+  width: 701px;
+  margin: 0 auto;
+}
+
+#matcherControls.is-visible {
+  display: block;
+}
+
+#matcherControls button {
+  padding: 0 1em;
+}
+
+#matcherControls .small-btn {
+  margin-right: -3px;
+}
+
+
+#toggleDiv {
+  position: fixed;
+  top: 15px;
+  left: 75px;
+  z-index: 50;
+}
+
+.is-active {
+  border-top: #f04c5d solid 10px;
+  border-bottom: #f04c5d solid 10px;
+}
+
+.highlight {
+  background-color: #ffff6b;
+}
+
+div.form__field.is-active > div:nth-child(2):before {
+  content: "(1)";
+  color: black;
+  float: left;
+  margin: 1px 9px;
+}
+div.form__field.is-active > div:nth-child(3):before {
+  content: "(2)";
+  color: black;
+  float: left;
+  margin: 1px 9px;
+}
+div.form__field.is-active > div:nth-child(4):before {
+  content: "(3)";
+  color: black;
+  float: left;
+  margin: 1px 9px;
+}
+div.form__field.is-active > div:nth-child(5):before {
+  content: "(4)";
+  color: black;
+  float: left;
+  margin: 1px 9px;
+}
+div.form__field.is-active > div:nth-child(6):before {
+  content: "(5)";
+  color: black;
+  float: left;
+  margin: 1px 9px;
+}
+div.form__field.is-active > div:nth-child(7):before {
+  content: "(6)";
+  color: black;
+  float: left;
+  margin: 1px 9px;
+}
+
+#qnsRemainingHolder {
+  position: fixed;
+  bottom: 15px;
+  left: 75px;
+}
+p#questionsRemaining {
+  font-size: 14px;
+  line-height: 15px;
+  margin: 0px;
+  color: #4c4c4c;
+}
+
+/* myToolTip text */
+.myToolTip .tooltiptext {
+  visibility: hidden;
+  width: 226.5px;
+  background-color: #3e4443;
+  color: #fff;
+  text-align: center;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 6px;
+  font-size: 85%;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.myToolTip:hover .tooltiptext {
+  visibility: visible;
+}

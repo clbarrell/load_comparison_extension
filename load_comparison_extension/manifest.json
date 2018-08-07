@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "Quick Question Matching for Culture Amp",
+  "version": "0.35",
+  "description": "Making question matching easy! Super awesome UI on the question matching page as you load survey comparisons. Made by Chris Barrell. Contact Chris for suggestions and feedback!",
+  "page_action": {
+    "default_title": "Quick Question Matching. Awesome UI for question matching page on Culture Amp platform. Contact Chris Barrell for suggestions and feedback!"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.cultureamp.com/surveys/*/summary_imports/*"],
+      "css": ["app.css"],
+      "js": ["app.js"]
+    }
+  ],
+  "web_accessible_resources": ["app.html"]
+}
