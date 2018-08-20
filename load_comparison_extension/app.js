@@ -11,13 +11,17 @@ function scrollIntoView() {
 }
 
 function makeActive() {
-  unmatchedQuestions[activeQuestionIndex].classList.add("is-active");
-  scrollIntoView();
+  if (unmatchedQuestions.length > 0) {
+    unmatchedQuestions[activeQuestionIndex].classList.add("is-active");
+    scrollIntoView();
+  }
 }
 
 function makeInactive() {
-  unmatchedQuestions[activeQuestionIndex].classList.remove("is-active");
-  unmatchedQuestions[activeQuestionIndex].classList.remove("highlight");
+  if (unmatchedQuestions.length > 0) {
+    unmatchedQuestions[activeQuestionIndex].classList.remove("is-active");
+    unmatchedQuestions[activeQuestionIndex].classList.remove("highlight");
+  }
 }
 
 function setInitialUnansweredQuestion() {
@@ -31,21 +35,25 @@ function setInitialUnansweredQuestion() {
   }
 }
 
+function finished() {
+  document.getElementById('matcherControls').classList.remove('is-visible');
+  acceptsHotkeys = false;
+  window.alert("Yay for you! No unmatched quesitons.");
+}
+
 // make the next question active
 function nextQuestion() {
   if (acceptsHotkeys == false) { return; };
   if (activeQuestionIndex >= unmatchedQuestions.length-1) {
     // at the end
     // refresh list
-    makeInactive()
-    unmatchedQuestions = document.getElementsByClassName('form__field--invalid');
+    isThisAnUnansweredQuestion();
     if (unmatchedQuestions.length > 0) {
       activeQuestionIndex = 0;
       makeActive();
     } else {
       activeQuestionIndex = -1;
-      document.getElementById('matcherControls').classList.remove('is-visible');
-      window.alert("Yay for you! No unmatched quesitons.");
+      finished();
     }
   } else {
     // next question in list!
@@ -66,25 +74,45 @@ function answerQuestion(matchNumber) {
     window.alert("Please select next unmatched question first.");
     return;
   };
+  if (unmatchedQuestions.length == 0) { finished(); }
   unmatchedQuestions[activeQuestionIndex].children[matchNumber].children[0].checked = true
-  makeInactive();
-  unhighlightQuestion(matchNumber);
-  // removing this class will automatically change unmatchedQuestions
-  unmatchedQuestions[activeQuestionIndex].classList.remove("form__field--invalid");
-  makeActive();
+  setTimeout(function(){
+    makeInactive();
+    unhighlightQuestion(matchNumber);
+    // removing this class will automatically change unmatchedQuestions
+    unmatchedQuestions[activeQuestionIndex].classList.remove("form__field--invalid");
+    makeActive();
+  },100);
   updateQuestionsRemaining();
 }
 
 function highlightQuestion(num) {
-  unmatchedQuestions[activeQuestionIndex].children[num].classList.add("highlight");
+  if (unmatchedQuestions.length > 0) {
+    unmatchedQuestions[activeQuestionIndex].children[num].classList.add("highlight");
+  }
 }
 
 function unhighlightQuestion(num) {
-  unmatchedQuestions[activeQuestionIndex].children[num].classList.remove("highlight");
+  if (unmatchedQuestions.length > 0) {
+    unmatchedQuestions[activeQuestionIndex].children[num].classList.remove("highlight");
+  }
 }
 
 function updateQuestionsRemaining() {
   document.getElementById("questionsRemaining").innerText = `${unmatchedQuestions.length - 1} unmatched questions`;
+}
+
+function isThisAnUnansweredQuestion() {
+  setTimeout(function() {
+    const currentlyActiveQuestions = document.getElementsByClassName('is-active');
+    for (let x = 0; x < currentlyActiveQuestions.length; x++) {
+      if (currentlyActiveQuestions[x].classList.contains('form__field--invalid') == false) {
+        currentlyActiveQuestions[x].classList.remove('is-active');
+        unmatchedQuestions[activeQuestionIndex].classList.add("is-active");
+        scrollIntoView();
+      }
+    }
+  }, 100);
 }
 
 /** FIND AND INSERT HTML  **/
@@ -97,11 +125,17 @@ buttonText = {
 fetch(chrome.extension.getURL('/app.html'))
   .then(response => response.text())
   .then(data => {
-    document.body.innerHTML += data;
+    // document.body.appendChild(data);
+    document.getElementsByClassName("footer noprint")[0].innerHTML += data;
     console.log("Success! HTML IS LOADED");
     // toggleControls()
     // show & hide the button control box
     document.getElementById('toggleControls').addEventListener('click', () => {
+      updateQuestionsRemaining();
+        if (unmatchedQuestions.length == 0) {
+        finished();
+        return;
+      }
       document.getElementById('matcherControls').classList.toggle('is-visible');
       if (activeQuestionIndex == -1) { setInitialUnansweredQuestion() };
       acceptsHotkeys = !acceptsHotkeys;
@@ -145,6 +179,10 @@ fetch(chrome.extension.getURL('/app.html'))
     ans6.onmouseout = () =>   { unhighlightQuestion(6) };
 
     document.getElementById('nxtQnBtn').addEventListener('click', () => {
+      if (unmatchedQuestions.length == 0) {
+        finished();
+        return;
+      }
       if (activeQuestionIndex == -1) { 
         setInitialUnansweredQuestion() 
       } else {
@@ -153,6 +191,10 @@ fetch(chrome.extension.getURL('/app.html'))
     });
 
     document.getElementById('currentQnBtn').addEventListener('click', () => {
+      if (unmatchedQuestions.length == 0) {
+        finished();
+        return;
+      }
       if (activeQuestionIndex == -1) { 
         setInitialUnansweredQuestion() 
       } else {
@@ -160,13 +202,26 @@ fetch(chrome.extension.getURL('/app.html'))
       };
     });
     document.getElementById('currentQnBtn').onmouseover = () => {
+      if (unmatchedQuestions.length == 0) {
+        finished();
+        return;
+      }
       unmatchedQuestions[activeQuestionIndex].classList.add("highlight");
     };
     document.getElementById('currentQnBtn').onmouseout = () => {
+      if (unmatchedQuestions.length == 0) {
+        finished();
+        return;
+      }
       unmatchedQuestions[activeQuestionIndex].classList.remove("highlight");
     };
+    // short cuts!
     document.addEventListener('keydown', (event) => {
+      if (unmatchedQuestions.length == 0) {
+        return;
+      }
       const keyName = event.key;
+      if (acceptsHotkeys == false) {return;};
       if (keyName == 'n') {
         if (activeQuestionIndex == -1) { 
           setInitialUnansweredQuestion() 
@@ -174,7 +229,6 @@ fetch(chrome.extension.getURL('/app.html'))
           nextQuestion();
         };
       } else if (keyName == 'c') {
-        if (acceptsHotkeys == false) {return;};
         if (activeQuestionIndex == -1) { 
           setInitialUnansweredQuestion() 
         } else {
@@ -194,8 +248,14 @@ fetch(chrome.extension.getURL('/app.html'))
         answerQuestion(6);
       }
     }, false);
+    // to get clicks on any of the answered questions
+    document.getElementsByClassName('main-content nav-layout__content')[0].addEventListener('click', function(e){
+      // e.target.name = question_match[5b7a36e91124a2786954152a]
+      if (e.target.type != 'radio') { return; }
+      isThisAnUnansweredQuestion();
+    });
     console.log("Successfully added event listeners");
   }).catch(err => {
     // handle error
-    console.log("Error! Something went wrong");
+    console.log("Error! Something went wrong", err);
   });
